@@ -1,0 +1,50 @@
+<div class="stepper">
+
+    <button type="button" disabled="@(Value <= Min)" @onclick="DecreaseAsync" aria-label="Decrease quantity">−</button>
+
+    <span>@Value</span>
+
+    <button type="button" @onclick="IncreaseAsync" aria-label="Increase quantity">+</button>
+
+</div>
+
+@code {
+    /// <summary>
+    /// Quantity displayed when increasing or decreasing the value
+    /// </summary>
+    [Parameter] public int Value { get; set; }
+
+    /// <summary>
+    /// Event to modify quantity remaining on store when increasing or decreasing the value
+    /// </summary>
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Fixed Min constant to 0
+    /// </summary>
+    private const int Min = 0;
+
+    /// <summary>
+    /// Max = available quantity remaining (compared with quantity remaining in the store and quantity on the cards)
+    /// </summary>
+    [Parameter] public int Max { get; set; } = int.MaxValue;
+
+    /// <summary>
+    /// Event activated when clicking on "+" and quantity available is already on the max
+    /// </summary>
+    [Parameter] public EventCallback OnLimitReached { get; set; }
+
+    /// <summary>
+    /// Decrease quantity
+    /// </summary>
+    /// <returns></returns>
+    private Task DecreaseAsync()
+        => Value > Min ? ValueChanged.InvokeAsync(Value - 1) : Task.CompletedTask;
+
+    /// <summary>
+    /// Increase quantity
+    /// </summary>
+    /// <returns></returns>
+    private Task IncreaseAsync()
+        => Value < Max ? ValueChanged.InvokeAsync(Value + 1) : OnLimitReached.InvokeAsync();
+}

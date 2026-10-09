@@ -1,0 +1,104 @@
+@using Ecommerce.Web.Pages.Components.Catalog;
+
+@page "/"
+@page "/articles"
+@implements IDisposable
+@inject IArticlesApiClient ArticlesApi
+@inject FavouritesState Favourites
+@inject ILogger<ArticlesPage> Logger
+
+<PageTitle>IdiouSpace - Products</PageTitle>
+
+@if (_isLoading)
+{
+    <p class="page-message">Loading products…</p>
+}
+else if (_error is not null)
+{
+    <p class="page-message error">@_error</p>
+}
+else
+{
+    <div class="products-page">
+
+        <ArticleFilters @bind-Filter="_filter" Categories="_categories" />
+
+        @foreach (var group in Groups)
+        {
+            <CategorySection @key="group.Key" Title="@group.Key">
+                @foreach (var article in group)
+                {
+                    <ArticleCard @key="article.Id" Article="article" />
+                }
+            </CategorySection>
+        }
+
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Principal list of articles
+    /// </summary>
+    private IReadOnlyList<ArticleViewModel> _articles = [];
+
+    /// <summary>
+    /// Principal list of categories
+    /// </summary>
+    private IReadOnlyList<string> _categories = [];
+
+    /// <summary>
+    /// Show groups containing artciles from filters
+    /// </summary>
+    private ArticleFilter _filter = new();
+
+    /// <summary>
+    /// Get error when loading artciles page (if any)
+    /// </summary>
+    private string? _error;
+
+    /// <summary>
+    /// Loads page (waiting for all elements getted)
+    /// </summary>
+    private bool _isLoading = true;
+
+    // Se recalcula en cada render: con un catálogo de este tamaño es inmediato y evita estado duplicado.
+
+    /// <summary>
+    /// Recalculates filter on every render
+    /// </summary>
+    private IEnumerable<IGrouping<string, ArticleViewModel>> Groups
+        => _filter.Apply(_articles!, Favourites.IsFavourite)
+                  .GroupBy(article => article.Category)
+                  .OrderBy(group => group.Key);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Event from Favourite state when changing toggle
+        Favourites.Changed += OnFavouritesChanged;
+
+        try
+        {
+            _articles = await ArticlesApi.GetAllArticlesAsync();
+            var favouritesTask = Favourites.LoadAsync();
+
+            _categories = [.. _articles.Select(article => article.Category).Distinct().Order()];
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogError(ex, "Could not load the catalogue.");
+            _error = "The products could not be loaded. Is the API running?";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Updates list if article is removed from favourites
+    /// </summary>
+    private void OnFavouritesChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Favourites.Changed -= OnFavouritesChanged;
+}

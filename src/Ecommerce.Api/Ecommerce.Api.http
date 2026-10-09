@@ -1,0 +1,35 @@
+@host = http://localhost:5080
+@customer = d0474d9a-d3ed-433c-a5d0-f79585222e12
+@article = 30000000-0000-0000-0000-000000000002
+@articleStore = 40000000-0000-0000-0000-000000000004
+
+### Catálogo
+GET {{host}}/api/articles
+
+### Favoritos del cliente (lista de ids de artículo)
+GET {{host}}/api/customers/{{customer}}/favourites
+
+### Marcar favorito (idempotente)
+PUT {{host}}/api/customers/{{customer}}/favourites/{{article}}
+
+### Quitar favorito
+DELETE {{host}}/api/customers/{{customer}}/favourites/{{article}}
+
+### Ver carrito
+GET {{host}}/api/customers/{{customer}}/cart
+
+### Guardar carrito (sustituye el contenido completo)
+PUT {{host}}/api/customers/{{customer}}/cart
+Content-Type: application/json
+
+{
+  "lines": [
+    { "articleStoreId": "{{articleStore}}", "quantity": 3 }
+  ]
+}
+
+### Vaciar carrito
+DELETE {{host}}/api/customers/{{customer}}/cart
+
+### Esquema OpenAPI
+GET {{host}}/openapi/v1.json

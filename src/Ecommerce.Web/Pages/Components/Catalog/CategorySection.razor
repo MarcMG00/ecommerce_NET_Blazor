@@ -1,0 +1,40 @@
+@using Ecommerce.Web.Pages.Components.Common;
+
+<section class="category-section @(_collapsed ? "collapsed" : null)">
+
+    <button type="button" class="category-header" @onclick="() => _collapsed = !_collapsed"
+            aria-expanded="@(_collapsed ? "false" : "true")">
+
+        <h2>@Title</h2>
+
+        <span class="category-arrow">
+            <Icon Name="@(_collapsed ? IconName.ChevronDown : IconName.ChevronUp)" />
+        </span>
+
+    </button>
+
+    <div class="category-content @(_collapsed ? "collapsed" : null)">
+        <div class="products-grid">
+            @ChildContent
+        </div>
+    </div>
+
+</section>
+
+@code {
+    /// <summary>
+    /// Title from Category
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Content displaying Article cards (all info inside of the component CategorySection is displayed on this ChildContent)
+    /// => In this case, see foreach content on ArticlesPage.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Category section is collapsed
+    /// </summary>
+    private bool _collapsed;
+}

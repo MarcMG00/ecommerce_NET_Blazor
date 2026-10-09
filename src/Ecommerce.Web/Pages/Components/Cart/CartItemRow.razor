@@ -1,0 +1,42 @@
+@using Ecommerce.Web.Pages.Components.Common;
+@inject CartState Cart
+
+<div class="cart-item">
+
+    <div class="cart-item-main">
+
+        <div class="cart-item-info">
+            <h2>@Item.ArticleName</h2>
+            <span class="brand">@Item.ArticleBrand</span>
+            <span class="category">@Item.ArticleCategory</span>
+        </div>
+
+        <div class="cart-item-store">
+            <div class="store-info">
+                <span class="store-name">@Item.StoreName</span>
+                <span class="unit-price">@Item.UnitPrice.ToString("0.00") € / unit</span>
+            </div>
+        </div>
+
+        <div class="cart-item-quantity">
+            <QuantityStepper Value="Item.Quantity" ValueChanged="SetQuantity" Max="Item.Stock" />
+        </div>
+
+        <div class="cart-item-total">@Item.LineTotal.ToString("0.00") €</div>
+
+    </div>
+
+</div>
+
+@code {
+    /// <summary>
+    /// Current item cart
+    /// </summary>
+    [Parameter] public CartItemViewModel Item { get; set; } = null!;
+
+    /// <summary>
+    /// Update quantity from current item cart
+    /// </summary>
+    /// <param name="quantity"></param>
+    private void SetQuantity(int quantity) => Cart.SetQuantity(Item.ArticleStoreId, quantity);
+}

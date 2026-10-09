@@ -1,0 +1,63 @@
+@if (Stores.Count > 0)
+{
+    var store = Stores[Math.Clamp(SelectedIndex, 0, Stores.Count - 1)];
+
+    <div class="store-selector">
+
+        @if (Stores.Count > 1)
+        {
+            <button type="button" class="store-arrow" @onclick="() => SelectAsync(SelectedIndex - 1)"
+                    aria-label="Previous store">
+                <Icon Name="IconName.ChevronLeft" Size="20" />
+            </button>
+        }
+
+        <div class="store-info">
+
+            <div class="store-main-info">
+                <span class="store-name">@store.StoreName :</span>
+                <span class="price">@store.Price.ToString("0.00") € -</span>
+                <span class="stock @(store.Stock == 0 ? "out-of-stock" : null)">Stock: @store.Stock</span>
+            </div>
+
+            @if (store.Promotion is not null)
+            {
+                <div class="promotion">@store.Promotion.Name</div>
+            }
+
+        </div>
+
+        @if (Stores.Count > 1)
+        {
+            <button type="button" class="store-arrow" @onclick="() => SelectAsync(SelectedIndex + 1)" aria-label="Next store">
+                <Icon Name="IconName.ChevronRight" Size="20" />
+            </button>
+        }
+
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Stores from ArticleVm concerned
+    /// </summary>
+    [Parameter] public IReadOnlyList<ArticleStoreViewModel> Stores { get; set; } = [];
+
+    /// <summary>
+    /// Index from actual store
+    /// </summary>
+    [Parameter] public int SelectedIndex { get; set; }
+
+    /// <summary>
+    /// Event to change index from store (on component child)
+    /// </summary>
+    [Parameter] public EventCallback<int> SelectedIndexChanged { get; set; }
+
+    /// <summary>
+    /// Circular navigation: from first store, if click to "before" goes to the last store
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    private Task SelectAsync(int index)
+            => SelectedIndexChanged.InvokeAsync((index % Stores.Count + Stores.Count) % Stores.Count);
+}

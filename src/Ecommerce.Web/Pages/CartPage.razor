@@ -1,0 +1,111 @@
+@page "/cart"
+@implements IDisposable
+@inject CartState Cart
+@inject ToastService Toasts
+
+<PageTitle>IdiouSpace - Cart</PageTitle>
+
+<div class="cart-page">
+
+    <header class="cart-header">
+        <div class="cart-header-content">
+
+            <div class="cart-header-info">
+                <h1>Shopping cart</h1>
+                <span>@Cart.LineCount @(Cart.LineCount == 1 ? "item" : "items")</span>
+            </div>
+
+            <button type="button" class="clear-cart-button" @onclick="() => _confirmClear = true">
+                <span><Icon Name="IconName.Trash" /></span>
+                <div>Clear cart</div>
+            </button>
+
+        </div>
+    </header>
+
+    @if (Cart.LineCount == 0)
+    {
+        <div class="empty-cart">
+            <h2>Your cart is empty</h2>
+            <p>Add some products to your cart to see them here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="cart-items">
+            @foreach (var item in Cart.Items)
+            {
+                <CartItemRow @key="item.ArticleStoreId" Item="item" />
+            }
+        </div>
+
+        <div class="cart-summary">
+
+            <div class="cart-actions">
+                <button type="button" disabled="@_saving" @onclick="SaveAsync">
+                    <span><Icon Name="IconName.Save" /></span>
+                    <div>Save cart</div>
+                </button>
+            </div>
+
+            <span>Total</span>
+            <strong>@Cart.Total.ToString("0.00") €</strong>
+
+        </div>
+    }
+
+    @if (_confirmClear)
+    {
+        <ConfirmDialog Title="Clear shopping cart?" ConfirmText="Clear cart"
+                       OnConfirm="ClearAsync" OnCancel="() => _confirmClear = false">
+            Are you sure you want to remove all products from your shopping cart?
+        </ConfirmDialog>
+    }
+
+</div>
+
+@code {
+    /// <summary>
+    /// Display modal when wanting to clear cart
+    /// </summary>
+    private bool _confirmClear;
+
+    /// <summary>
+    /// Disable "Save" btn when is saving
+    /// </summary>
+    private bool _saving;
+
+    protected override void OnInitialized() => Cart.Changed += OnCartChanged;
+
+    /// <summary>
+    /// Rerender component when changing cart info
+    /// </summary>
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+
+    /// <summary>
+    /// Save cart
+    /// </summary>
+    /// <returns></returns>
+    private async Task SaveAsync()
+    {
+        _saving = true;
+
+        if (await Cart.SaveAsync())
+            Toasts.Success("Shopping cart saved successfully.");
+
+        _saving = false;
+    }
+
+    /// <summary>
+    /// Clear cart after confirmation
+    /// </summary>
+    /// <returns></returns>
+    private async Task ClearAsync()
+    {
+        await Cart.ClearAsync();
+        // Hide confirmation modal
+        _confirmClear = false;
+    }
+
+    public void Dispose() => Cart.Changed -= OnCartChanged;
+}

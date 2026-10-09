@@ -1,0 +1,10 @@
+global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using Ecommerce.Api.Data;
+global using Ecommerce.Api.Domain;
+global using Ecommerce.Api.Infrastructure;
+global using Ecommerce.Api.Services;
+global using Ecommerce.Shared;
+global using Ecommerce.Shared.Enums;
+global using Ecommerce.Shared.ViewModels;
+global using Microsoft.EntityFrameworkCore;

@@ -1,0 +1,107 @@
+@using Ecommerce.Web.Pages.Components.Common;
+
+<div class="products-search">
+
+    <div class="search-input-wrapper">
+
+        <span class="search-icon">
+            <Icon Name="IconName.Search" />
+        </span>
+
+        <input type="text" placeholder="Search products..." aria-label="Search products"
+               @bind:get="Filter.Search" @bind:set="SearchChangedAsync" @bind:event="oninput" />
+
+        @if (Filter.Search.Length > 0)
+        {
+            <button type="button" class="clear-search-button" @onclick="ClearSearchAsync" aria-label="Clear search">
+                <Icon Name="IconName.Close" />
+            </button>
+        }
+
+    </div>
+
+    <button type="button" class="reset-filters-button" @onclick="ResetAsync">
+        <Icon Name="IconName.Reset" />
+        <span>Reset</span>
+    </button>
+
+</div>
+
+<div class="category-filters">
+
+    @foreach (var category in Categories)
+    {
+        <button type="button" class="category-filter @(Filter.Categories.Contains(category) ? "active" : null)"
+                @onclick="() => UpdateAsync(Filter.ToggleCategory(category))">
+            @category
+        </button>
+    }
+
+</div>
+
+<div class="additional-filters">
+
+    <button type="button" class="filter-button @(Filter.PromotionsOnly ? "active" : null)" @onclick="TogglePromotionsAsync">
+        Promoción
+    </button>
+
+    <button type="button" class="filter-button @(Filter.FavouritesOnly ? "active" : null)" @onclick="ToggleFavouritesAsync">
+        Favoritos
+    </button>
+
+</div>
+
+@code {
+    /// <summary>
+    /// Actual filter
+    /// </summary>
+    [Parameter] public ArticleFilter Filter { get; set; } = null!;
+
+    /// <summary>
+    /// EventCallBack to update filters
+    /// </summary>
+    [Parameter] public EventCallback<ArticleFilter> FilterChanged { get; set; }
+
+    /// <summary>
+    /// All categories available
+    /// </summary>
+    [Parameter] public IReadOnlyList<string> Categories { get; set; } = [];
+
+    /// <summary>
+    /// StateHasChanged to child, applying new filters
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    private Task UpdateAsync(ArticleFilter filter) => FilterChanged.InvokeAsync(filter);
+
+    /// <summary>
+    /// Apply bar search filter
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private Task SearchChangedAsync(string? value) => UpdateAsync(Filter with { Search = value ?? "" });
+
+    /// <summary>
+    /// Clear bar search filter (from "x")
+    /// </summary>
+    /// <returns></returns>
+    private Task ClearSearchAsync() => UpdateAsync(Filter with { Search = "" });
+
+    /// <summary>
+    /// Apply promotions filter
+    /// </summary>
+    /// <returns></returns>
+    private Task TogglePromotionsAsync() => UpdateAsync(Filter with { PromotionsOnly = !Filter.PromotionsOnly });
+
+    /// <summary>
+    /// Apply favourites filter
+    /// </summary>
+    /// <returns></returns>
+    private Task ToggleFavouritesAsync() => UpdateAsync(Filter with { FavouritesOnly = !Filter.FavouritesOnly });
+
+    /// <summary>
+    /// Reset all filters (empty values)
+    /// </summary>
+    /// <returns></returns>
+    private Task ResetAsync() => UpdateAsync(new ArticleFilter());
+}

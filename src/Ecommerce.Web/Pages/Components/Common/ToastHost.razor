@@ -1,0 +1,96 @@
+@implements IDisposable
+@inject ToastService Toasts
+
+@foreach (var toast in _toasts)
+{
+    <div @key="toast.Id" role="status"
+         class="toast @toast.Kind.ToString().ToLowerInvariant() @(_closing.Contains(toast.Id) ? "closing" : null)">
+        <span>@toast.Message</span>
+        <button type="button" class="toast-close-button" aria-label="Close notification"
+                @onclick="() => CloseAsync(toast)">×</button>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// TIme displayed of the toast
+    /// </summary>
+    private static readonly TimeSpan Lifetime = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    /// CSS Transition when closing toast
+    /// </summary>
+    private static readonly TimeSpan FadeOut = TimeSpan.FromMilliseconds(350);
+
+    /// <summary>
+    /// List of toasts to display
+    /// </summary>
+    private readonly List<Toast> _toasts = [];
+
+    /// <summary>
+    /// Set of toasts that are disappearing
+    /// </summary>
+    private readonly HashSet<Guid> _closing = [];
+
+    /// <summary>
+    /// Cancellation token
+    /// </summary>
+    private readonly CancellationTokenSource _cts = new();
+
+    protected override void OnInitialized() => Toasts.Shown += OnShown;
+
+    /// <summary>
+    /// Display toast
+    /// </summary>
+    /// <param name="toast"></param>
+    private void OnShown(Toast toast) => _ = InvokeAsync(async () =>
+    {
+        _toasts.Add(toast);
+        StateHasChanged();
+
+        try
+        {
+            // Close toast after delay (when no forced)
+            await Task.Delay(Lifetime, _cts.Token);
+            await CloseAsync(toast);
+        }
+        catch (OperationCanceledException)
+        {
+            // Component has been destroyed
+        }
+    });
+
+    /// <summary>
+    /// Close toast after delay or forced from "x"
+    /// </summary>
+    /// <param name="toast"></param>
+    /// <returns></returns>
+    private async Task CloseAsync(Toast toast)
+    {
+        if (!_closing.Add(toast.Id))
+            return;
+
+        // Apply "closing" class and start CSS transition
+        StateHasChanged();
+
+        try
+        {
+            await Task.Delay(FadeOut, _cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        _toasts.Remove(toast);
+        _closing.Remove(toast.Id);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Toasts.Shown -= OnShown;
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

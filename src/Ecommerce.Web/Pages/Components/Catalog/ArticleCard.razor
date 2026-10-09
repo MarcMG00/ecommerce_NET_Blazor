@@ -1,0 +1,162 @@
+@using Ecommerce.Web.Pages.Components.Common;
+@inject CartState Cart
+@inject FavouritesState Favourites
+
+<article class="product-card">
+
+    <div class="product-card-content">
+
+        <div class="product-card-header">
+
+            <div>
+                <h2>@Article.Name</h2>
+                <p class="brand">@Article.Brand</p>
+            </div>
+
+            <button type="button" class="favorite-button @(IsFavourite ? "active" : null)"
+                    @onclick="ToggleFavouriteAsync"
+                    aria-label="@(IsFavourite ? "Remove from favourites" : "Add to favourites")">
+                @if (IsFavourite)
+                {
+                    <text>❤️</text>
+                }
+                else
+                {
+                    <Icon Name="IconName.Heart" />
+                }
+            </button>
+
+        </div>
+
+        <span class="category">@Article.Category</span>
+
+        <div class="description-section">
+
+            <button type="button" class="description-button" @onclick="() => _descriptionOpen = !_descriptionOpen">
+                <span>@(_descriptionOpen ? "Hide description" : "Show description")</span>
+            </button>
+
+            @if (_descriptionOpen)
+            {
+                <p class="description">@Article.Description</p>
+            }
+
+        </div>
+
+        @if (Article.Stores.Count > 0)
+        {
+            <StoreSelector Stores="Article.Stores" SelectedIndex="_storeIndex" SelectedIndexChanged="SelectStore" />
+
+            <div class="quantity-section">
+
+                <span>Quantity</span>
+
+                @if (_stockWarning)
+                {
+                    <div class="stock-warning">Already reached the max available stock for this store.</div>
+                }
+
+                <QuantityStepper Value="PendingQty" ValueChanged="SetPendingQty" Max="AvailableQty"
+                                 OnLimitReached="ShowStockWarning" />
+
+            </div>
+
+            <button type="button" class="add-to-cart-button" disabled="@(PendingQty == 0)" @onclick="AddToCart">
+                Add to cart
+            </button>
+        }
+
+    </div>
+
+</article>
+
+@code {
+    /// <summary>
+    /// The current articleVm
+    /// </summary>
+    [Parameter] public ArticleViewModel Article { get; set; } = null!;
+
+
+    /// <summary>
+    /// Pending quantity on article by store
+    /// </summary>
+    private readonly Dictionary<Guid, int> _pendingQtyByStore = [];
+
+    /// <summary>
+    /// Store index (because possibility of store selection)
+    /// /// </summary>
+    private int _storeIndex;
+
+    /// <summary>
+    /// Display article description
+    /// </summary>
+    private bool _descriptionOpen;
+
+    /// <summary>
+    /// Check is stock for store selected
+    /// </summary>
+    private bool _stockWarning;
+
+    /// <summary>
+    /// Get store from index selected
+    /// </summary>
+    private ArticleStoreViewModel Store => Article.Stores[Math.Clamp(_storeIndex, 0, Article.Stores.Count - 1)];
+
+    /// <summary>
+    /// Available quantity that can still be added in the cart: stock from store minus cart quantity
+    /// </summary>
+    private int AvailableQty => Math.Max(Store.Stock - Cart.QuantityOf(Store.ArticleStoreId), 0);
+
+    /// <summary>
+    /// Quantity selected and not added to the cart (by store)
+    /// </summary>
+    private int PendingQty => Math.Min(_pendingQtyByStore.GetValueOrDefault(Store.ArticleStoreId), AvailableQty);
+
+    /// <summary>
+    /// Check if article is favourites
+    /// </summary>
+    private bool IsFavourite => Favourites.IsFavourite(Article.Id);
+
+    /// <summary>
+    /// Get index from store (when switching)
+    /// </summary>
+    /// <param name="index"></param>
+    private void SelectStore(int index)
+    {
+        _storeIndex = index;
+        // Remove stock warning becasue store has switched
+        _stockWarning = false;
+    }
+
+    /// <summary>
+    /// Modify pending quantity
+    /// </summary>
+    /// <param name="quantity"></param>
+    private void SetPendingQty(int quantity)
+    {
+        _pendingQtyByStore[Store.ArticleStoreId] = quantity;
+        _stockWarning = false;
+    }
+
+    /// <summary>
+    /// Display info message if no more stock on current store
+    /// </summary>
+    private void ShowStockWarning() => _stockWarning = true;
+
+    /// <summary>
+    /// Add quantity to the cart
+    /// </summary>
+    private void AddToCart()
+    {
+        Cart.Add(Article, Store, PendingQty);
+        _pendingQtyByStore.Remove(Store.ArticleStoreId);
+        // Remove stock warning becasue store has switched
+        _stockWarning = false;
+    }
+
+    /// <summary>
+    /// Add/ remove article from favourites
+    /// </summary>
+    /// <returns></returns>
+    private Task ToggleFavouriteAsync() => Favourites.ToggleAsync(Article.Id);
+}

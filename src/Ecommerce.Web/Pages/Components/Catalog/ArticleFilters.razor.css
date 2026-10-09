@@ -1,0 +1,212 @@
+.products-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 600px;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 44px;
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+    background: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.search-input-wrapper input:focus {
+    border-color: #999999;
+    box-shadow:
+    0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input-wrapper input::placeholder {
+    color: #999999;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    display: flex;
+    transform: translateY(-50%);
+    color: #777777;
+    pointer-events: none;
+}
+
+.search-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.clear-search-button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #888888;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.clear-search-button:hover {
+    background: #eeeeee;
+    color: #333333;
+}
+
+.clear-search-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.category-filter {
+    padding: 8px 14px;
+    border: 1px solid #dddddd;
+    border-radius: 20px;
+    background: #ffffff;
+    color: #555555;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.category-filter:hover {
+    background: #f5f5f5;
+    border-color: #cccccc;
+}
+
+.category-filter:active {
+    transform: scale(0.97);
+}
+
+.category-filter.active {
+    background: #222222;
+    border-color: #222222;
+    color: #ffffff;
+}
+
+.additional-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.filter-button {
+    padding: 8px 14px;
+    border: 1px solid #dddddd;
+    border-radius: 20px;
+    background: #ffffff;
+    color: #555555;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.filter-button:hover {
+    background: #f5f5f5;
+    border-color: #cccccc;
+}
+
+.filter-button:active {
+    transform: scale(0.97);
+}
+
+.filter-button.active {
+    background: #222222;
+    border-color: #222222;
+    color: #ffffff;
+}
+
+.reset-filters-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 12px 16px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #555555;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.reset-filters-button:hover {
+    background: #f5f5f5;
+    border-color: #cccccc;
+    color: #222222;
+}
+
+.reset-filters-button:active {
+    transform: scale(0.97);
+}
+
+.reset-filters-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 600px) {
+    .products-search {
+        align-items: stretch;
+    }
+
+    .search-input-wrapper {
+        min-width: 0;
+    }
+
+    .reset-filters-button span {
+        display: none;
+    }
+
+    .reset-filters-button {
+        width: 46px;
+        padding: 0;
+    }
+}

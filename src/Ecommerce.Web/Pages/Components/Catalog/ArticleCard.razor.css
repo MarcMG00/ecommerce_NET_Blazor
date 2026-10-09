@@ -1,0 +1,154 @@
+.product-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.product-card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.product-card-header h2 {
+    margin-bottom: 6px;
+}
+
+.product-card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+.brand {
+    margin: 0 0 12px;
+    color: #666;
+    font-size: 14px;
+}
+
+.category {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #f1f1f1;
+    color: #555;
+    font-size: 12px;
+}
+
+.description-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.description-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #555555;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.description-button:hover {
+    color: #222222;
+}
+
+.description {
+    margin: 10px 0 0;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.favorite-button {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    transition: transform 0.15s ease;
+}
+
+.favorite-button:hover {
+    transform: scale(1.15);
+}
+
+.favorite-button.active {
+    font-size: 27px;
+}
+
+.quantity-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.quantity-section>span {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.stock-warning {
+    padding: 2px 2px;
+    border-radius: 8px;
+    background: #fff1f0;
+    color: #a8071a;
+    font-size: 13px;
+}
+
+.add-to-cart-button {
+    width: 100%;
+    margin-top: auto;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #222;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.add-to-cart-button:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
+
+.add-to-cart-button:active {
+    transform: translateY(0);
+}
+
+.add-to-cart-button:disabled {
+    background: #cccccc;
+    color: #777777;
+    cursor: not-allowed;
+    transform: none;
+}

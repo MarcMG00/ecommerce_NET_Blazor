@@ -1,0 +1,31 @@
+.stepper {
+    display: flex;
+    align-items: center;
+}
+
+.stepper button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.stepper button:hover {
+    background: #f3f3f3;
+}
+
+.stepper span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.stepper button:disabled {
+    background: #eeeeee;
+    color: #aaaaaa;
+    cursor: not-allowed;
+}

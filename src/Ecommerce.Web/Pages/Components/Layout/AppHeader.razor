@@ -1,0 +1,28 @@
+@using Ecommerce.Web.Pages.Components.Common;
+@implements IDisposable
+@inject CartState Cart
+
+<header class="main-header">
+    <div class="header-content">
+
+        <a href="/" class="logo">IdiouSpace</a>
+
+        <a href="/cart" class="cart-link" aria-label="Shopping cart">
+            <Icon Name="IconName.ShoppingCart" />
+
+            @if (Cart.LineCount > 0)
+            {
+                <span class="cart-badge">@Cart.LineCount</span>
+            }
+        </a>
+
+    </div>
+</header>
+
+@code {
+    protected override void OnInitialized() => Cart.Changed += OnCartChanged;
+
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Cart.Changed -= OnCartChanged;
+}
